@@ -24,8 +24,8 @@ class Author(db.Model):
         """
         A simple info string if needed.
         """
-        birth = self.birth_date.year if self.birth_date else "unknown"
-        death = self.date_of_death.year if self.date_of_death else "unknown"
+        birth = self.birth_date if self.birth_date else "unknown"
+        death = self.date_of_death if self.date_of_death else "unknown"
         return f"Author: {self.name} birth_date: {birth} date_of_death: {death}"
 
 class Book(db.Model):
