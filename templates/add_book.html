@@ -7,9 +7,27 @@
   </head>
   <body>
 
-  <form action="/add_author" method="POST">
+<form action="/add_book" method="POST">
   <!-- Add the form here -->
-  </form>
+  <label for="title">Book Title:</label>
+  <input type="text" id="title" name="title" required><br><br>
+
+  <label for="author_id">Choose an author:</label><br>
+  <select id="author_id" name="author_id" required>
+    <option value="" disabled selected>Choose an author...</option>
+    {% for author in authors %}
+      <option value="{{ author.id }}">{{ author.name }}</option>
+    {% endfor %}
+  </select><br><br>
+
+  <label for="isbn">isbn:</label>
+  <input type="text" id="isbn" name="isbn" required><br><br>
+
+  <label for="publication_year">Publication Year:</label>
+  <input type="date" id="publication_year" name="publication_year" required><br><br>
+
+  <input type="submit" value="Add Book">
+</form>
 
   </body>
 </html>

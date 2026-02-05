@@ -6,7 +6,11 @@ from flask import Flask, request, render_template
 from flask_cors import CORS
 
 app = Flask(__name__)
+
+#TODO is CORS needed
 CORS(app)  # This will enable CORS for all routes
+
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(basedir, 'data/library.sqlite')}"
@@ -33,11 +37,34 @@ def add_author():
         new_author.birth_date = birth_date
         if date_of_death:
             new_author.date_of_death = date_of_death
-        print(new_author)
         db.session.add(new_author)
         db.session.commit()
         return render_template("add_author.html")
 
+@app.route('/add_book', methods=['GET', 'POST'])
+def add_book():
+    """
+    This route handles the creation of a book.
+    """
+    if request.method == 'GET':
+        authors = Author.query.all()
+        print("authors=", authors)
+        return render_template("add_book.html", authors=authors)
+    else:
+        title = request.form.get('title')
+        author_id = request.form.get('author_id')
+        isbn = request.form.get('isbn')
+        publication_year = request.form.get('publication_year')
+        publication_year = get_date(publication_year)
+
+        new_book = Book()
+        new_book.title = title
+        new_book.author_id = author_id
+        new_book.isbn = isbn
+        new_book.publication_year = publication_year
+        db.session.add(new_book)
+        db.session.commit()
+        return render_template("add_book.html")
 
 def get_date(date_string: str):
     """
