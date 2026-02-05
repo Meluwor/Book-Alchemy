@@ -1,16 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  </head>
-  <body>
+</head>
+<body>
 
-    {% for book in books %}
-    <div> <h3>{{ book.title }}</h3>
+{% for book in books %}
+<div style="margin-bottom: 20px; display: flex; align-items: center;">
+    <img src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg"
+         alt="Cover für {{ book.title }}"
+         style="width: 100px; height: auto; margin-right: 15px; border-radius: 4px;">
+
+    <div>
+        <h3>{{ book.title }}</h3>
+        <p>Autor: {{ book.author.name }}</p>
+        <small>ISBN: {{ book.isbn }}</small>
     </div>
-    {% endfor %}
+</div>
+{% endfor %}
 
-  </body>
+</body>
 </html>

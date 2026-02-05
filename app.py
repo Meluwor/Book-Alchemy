@@ -2,7 +2,7 @@ from datetime import datetime
 import os
 
 from data_models import db, Author, Book
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -16,6 +16,14 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(basedir, 'data/library.sqlite')}"
 db.init_app(app)
 
+
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+    """
+    This route handles the homepage.
+    """
+    books = Book.query.all()
+    return render_template("home.html" , books = books)
 
 @app.route('/add_author', methods=['GET', 'POST'])
 def add_author():
@@ -39,7 +47,8 @@ def add_author():
             new_author.date_of_death = date_of_death
         db.session.add(new_author)
         db.session.commit()
-        return render_template("add_author.html")
+        # TODO user needs/wants more info
+        return redirect(url_for('home'))
 
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book():
@@ -48,7 +57,6 @@ def add_book():
     """
     if request.method == 'GET':
         authors = Author.query.all()
-        print("authors=", authors)
         return render_template("add_book.html", authors=authors)
     else:
         title = request.form.get('title')
@@ -64,7 +72,8 @@ def add_book():
         new_book.publication_year = publication_year
         db.session.add(new_book)
         db.session.commit()
-        return render_template("add_book.html")
+        #TODO user needs/wants more info
+        return redirect(url_for('home'))
 
 def get_date(date_string: str):
     """
