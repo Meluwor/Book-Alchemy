@@ -1,15 +1,16 @@
 from datetime import datetime
 import os
 
+from sqlalchemy import or_
+
 from data_models import db, Author, Book
 from flask import Flask, request, render_template, redirect, url_for
 from flask_cors import CORS
 
 app = Flask(__name__)
 
-#TODO is CORS needed
+# TODO is CORS needed
 CORS(app)  # This will enable CORS for all routes
-
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -22,6 +23,19 @@ def home():
     """
     This route handles the homepage.
     """
+    search_for = request.args.get('search')
+    if search_for:
+        query = Book.query.join(Author)
+        search_for = f"%{search_for}%"
+        query = query.filter(
+            or_(
+                Book.title.like(search_for),
+                Author.name.like(search_for)
+            )
+        )
+        result = query.all()
+        return render_template("home.html", books=result)
+
     sort_by = request.args.get('sort_by', 'title')
     if sort_by:
         if sort_by == 'author':
@@ -30,7 +44,8 @@ def home():
             books = Book.query.order_by(Book.title).all()
     else:
         books = Book.query.all()
-    return render_template("home.html" , books = books, current_sort = sort_by)
+    return render_template("home.html", books=books)
+
 
 @app.route('/add_author', methods=['GET', 'POST'])
 def add_author():
@@ -58,6 +73,7 @@ def add_author():
         # TODO user needs/wants more info
         return redirect(url_for('home'))
 
+
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book():
     """
@@ -81,8 +97,9 @@ def add_book():
 
         db.session.add(new_book)
         db.session.commit()
-        #TODO user needs/wants more info
+        # TODO user needs/wants more info
         return redirect(url_for('home'))
+
 
 def get_date(date_string: str):
     """
