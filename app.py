@@ -22,8 +22,15 @@ def home():
     """
     This route handles the homepage.
     """
-    books = Book.query.all()
-    return render_template("home.html" , books = books)
+    sort_by = request.args.get('sort_by', 'title')
+    if sort_by:
+        if sort_by == 'author':
+            books = Book.query.join(Author).order_by(Author.name).all()
+        else:
+            books = Book.query.order_by(Book.title).all()
+    else:
+        books = Book.query.all()
+    return render_template("home.html" , books = books, current_sort = sort_by)
 
 @app.route('/add_author', methods=['GET', 'POST'])
 def add_author():
@@ -45,6 +52,7 @@ def add_author():
         new_author.birth_date = birth_date
         if date_of_death:
             new_author.date_of_death = date_of_death
+
         db.session.add(new_author)
         db.session.commit()
         # TODO user needs/wants more info
@@ -70,6 +78,7 @@ def add_book():
         new_book.author_id = author_id
         new_book.isbn = isbn
         new_book.publication_year = publication_year
+
         db.session.add(new_book)
         db.session.commit()
         #TODO user needs/wants more info

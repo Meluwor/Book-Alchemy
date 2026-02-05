@@ -7,6 +7,12 @@
 </head>
 <body>
 
+<div style="margin-bottom: 20px;">
+    <span>Order by:</span>
+    <a href="{{ url_for('home', sort_by='title') }}">Title</a>
+    <a href="{{ url_for('home', sort_by='author') }}">Author</a>
+</div>
+
 {% for book in books %}
 <div style="margin-bottom: 20px; display: flex; align-items: center;">
     <img src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg"
