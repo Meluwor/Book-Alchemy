@@ -4,13 +4,13 @@ import os
 from sqlalchemy import or_
 
 from data_models import db, Author, Book
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, flash
 from flask_cors import CORS
 
 app = Flask(__name__)
 
-# TODO is CORS needed
-CORS(app)  # This will enable CORS for all routes
+# Some key is needed to activate flash
+app.secret_key = 'some_key'
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -101,11 +101,51 @@ def add_book():
         return redirect(url_for('home'))
 
 
+@app.route('/book/<int:book_id>/delete', methods=['POST'])
+def delete_book(book_id):
+    """
+    This route will delete a book.
+    """
+    book = Book.query.get(book_id)
+    if not book:
+        flash(f'Book_id:{book_id} does not exist.', 'info')
+        return redirect(url_for('home'))
+    author_id = book.author_id
+    try:
+
+        db.session.delete(book)
+        db.session.commit()
+        check_author(author_id)
+
+        flash(f'{book.title} deleted.', 'success')
+        return redirect(url_for('home'))
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error while deleting book_id:{book_id}.', 'danger')
+        return redirect(url_for('home'))
+
+
+def check_author(author_id):
+    """
+    This function will delete an author if there are no more books of this author.
+    """
+    books_count = Book.query.filter_by(author_id=author_id).count()
+    if books_count == 0:
+        author = Author.query.get(author_id)
+        if author:
+            db.session.delete(author)
+            db.session.commit()
+            flash(f'Author {author.name} was also deleted because they have no more books.',
+                  'info')
+
+
 def get_date(date_string: str):
     """
-    This function shall return a given string(date) as a date
+    This function shall return a given string(date) as a date.
     """
-    return datetime.strptime(date_string, '%Y-%m-%d').date()
+    if date_string:
+        return datetime.strptime(date_string, '%Y-%m-%d').date()
+    return None
 
 
 if __name__ == '__main__':

@@ -6,6 +6,22 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 </head>
 <body>
+<!-- FLASH MESSAGES START -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div style="margin: 20px 0;">
+    {% for category, message in messages %}
+    <div style="padding: 15px; margin-bottom: 10px; border-radius: 5px;
+                    background-color: {{ 'lightblue' if category == 'info' else '#d4edda' if category == 'success' else '#f8d7da' }};
+                    color: {{ 'black' if category == 'info' else '#155724' if category == 'success' else '#721c24' }};
+                    border: 1px solid transparent;">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+<!-- FLASH MESSAGES ENDE -->
 
 <div style="margin-bottom: 20px;">
     <span>Order by:</span>
@@ -19,6 +35,7 @@
     <button type="submit">Search</button>
     <a href="{{ url_for('home') }}">Reset</a>
 </form>
+
 {% if books %}
 {% for book in books %}
 <div style="margin-bottom: 20px; display: flex; align-items: center;">
@@ -30,6 +47,10 @@
         <h3>{{ book.title }}</h3>
         <p>Autor: {{ book.author.name }}</p>
         <small>ISBN: {{ book.isbn }}</small>
+        <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST"
+              onsubmit="return confirm('Delte this book?');">
+            <button type="submit" style="color: red;">Delete book</button>
+        </form>
     </div>
 </div>
 {% endfor %}

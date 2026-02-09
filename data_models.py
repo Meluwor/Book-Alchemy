@@ -13,12 +13,12 @@ class Author(db.Model):
     date_of_death = Column(Date)
 
     books = relationship("Book", back_populates="author")
+
     def __repr__(self):
         """
         A simple info string if needed.
         """
         return f"<Author id: {self.id}, name: '{self.name}')>"
-
 
     def __str__(self):
         """
@@ -27,6 +27,7 @@ class Author(db.Model):
         birth = self.birth_date if self.birth_date else "unknown"
         death = self.date_of_death if self.date_of_death else "unknown"
         return f"Author: {self.name} birth_date: {birth} date_of_death: {death}"
+
 
 class Book(db.Model):
     __tablename__ = 'books'
@@ -49,10 +50,3 @@ class Book(db.Model):
         A simple info string if needed.
         """
         return f"<Book id: {self.id}, title: '{self.title}')>"
-
-def main():
-    print("start")
-
-
-if __name__ == "__main__":
-    main()
