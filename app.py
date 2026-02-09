@@ -26,14 +26,17 @@ def home():
     search_for = request.args.get('search')
     if search_for:
         query = Book.query.join(Author)
-        search_for = f"%{search_for}%"
+        search = f"%{search_for}%"
         query = query.filter(
             or_(
-                Book.title.like(search_for),
-                Author.name.like(search_for)
+                Book.title.like(search),
+                Author.name.like(search)
             )
         )
         result = query.all()
+        if not result:
+            flash(f'No books found for "{search_for}".', 'info')
+            return render_template("home.html", books=[])
         return render_template("home.html", books=result)
 
     sort_by = request.args.get('sort_by', 'title')
@@ -70,7 +73,7 @@ def add_author():
 
         db.session.add(new_author)
         db.session.commit()
-        # TODO user needs/wants more info
+        flash(f'Author was added.', 'info')
         return redirect(url_for('home'))
 
 
@@ -97,7 +100,8 @@ def add_book():
 
         db.session.add(new_book)
         db.session.commit()
-        # TODO user needs/wants more info
+
+        flash(f'Book was added.', 'info')
         return redirect(url_for('home'))
 
 
