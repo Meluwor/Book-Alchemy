@@ -1,11 +1,10 @@
-from datetime import datetime
 import os
+from datetime import datetime
 
+from flask import Flask, request, render_template, redirect, url_for, flash
 from sqlalchemy import or_
 
 from data_models import db, Author, Book
-from flask import Flask, request, render_template, redirect, url_for, flash
-from flask_cors import CORS
 
 app = Flask(__name__)
 
